@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MeetSpace — Video Konferans</title>
+  <meta name="description" content="Ücretsiz, tarayıcı tabanlı video konferans. Hesap açmadan, uygulama indirmeden anında görüntülü toplantı başlatın." />
+  <meta name="theme-color" content="#6C63FF" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="lobby-page">
+
+  <!-- Animated background -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="lobby-container">
+
+    <!-- Logo -->
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="10" fill="url(#grad)"/>
+          <path d="M7 11C7 9.9 7.9 9 9 9h10c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H9c-1.1 0-2-.9-2-2V11z" fill="white"/>
+          <path d="M21 13.5l4-2.5v10l-4-2.5V13.5z" fill="white"/>
+          <defs>
+            <linearGradient id="grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#6C63FF"/>
+              <stop offset="1" stop-color="#3ECFCF"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span class="logo-text">MeetSpace</span>
+    </div>
+
+    <h1 class="hero-title">Anında<br/><span class="gradient-text">Görüntülü Toplantı</span></h1>
+    <p class="hero-sub">Hesap açma. Uygulama indirme. Sadece bağlan.</p>
+
+    <!-- Card -->
+    <div class="card">
+
+      <!-- Name input -->
+      <div class="form-group">
+        <label for="username">Adınız</label>
+        <input type="text" id="username" placeholder="Adınızı girin..." maxlength="30" autocomplete="off" />
+      </div>
+
+      <div class="divider-text">Ne yapmak istersiniz?</div>
+
+      <!-- Create Room -->
+      <button class="btn btn-primary" id="createBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Yeni Oda Oluştur
+      </button>
+
+      <div class="or-divider"><span>veya</span></div>
+
+      <!-- Join Room -->
+      <div class="form-group">
+        <label for="roomCode">Oda Kodu</label>
+        <div class="input-row">
+          <input type="text" id="roomCode" placeholder="Oda kodunu girin..." maxlength="10" autocomplete="off" style="text-transform:uppercase;" />
+          <button class="btn btn-secondary" id="joinBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+            Katıl
+          </button>
+        </div>
+      </div>
+
+      <!-- Error message -->
+      <div class="error-msg" id="errorMsg"></div>
+
+    </div>
+
+    <!-- Features -->
+    <div class="features">
+      <div class="feature">
+        <span class="feature-icon">🔒</span>
+        <span>Şifreli P2P</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">⚡</span>
+        <span>Anlık Bağlantı</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">👥</span>
+        <span>Max 10 Kişi</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🌐</span>
+        <span>Ücretsiz</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const createBtn  = document.getElementById('createBtn');
+    const joinBtn    = document.getElementById('joinBtn');
+    const usernameEl = document.getElementById('username');
+    const roomCodeEl = document.getElementById('roomCode');
+    const errorMsg   = document.getElementById('errorMsg');
+
+    // Link Share Logic (Join via URL)
+    const urlParams = new URLSearchParams(window.location.search);
+    const prefilledRoom = urlParams.get('room');
+
+    if (prefilledRoom) {
+      roomCodeEl.value = prefilledRoom;
+      roomCodeEl.readOnly = true;
+      document.querySelector('.divider-text').style.display = 'none';
+      createBtn.style.display = 'none';
+      document.querySelector('.or-divider').style.display = 'none';
+      
+      const roomLabel = document.querySelector('label[for="roomCode"]');
+      if (roomLabel) roomLabel.textContent = 'Davet Edilen Oda Kodu';
+      
+      joinBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg> Odada Katıl';
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+      setTimeout(() => errorMsg.style.display = 'none', 3000);
+    }
+
+    function getUsername() {
+      const name = usernameEl.value.trim();
+      if (!name) { showError('Lütfen adınızı girin.'); return null; }
+      return name;
+    }
+
+    function generateRoomCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = '';
+      for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+      return code;
+    }
+
+    createBtn.addEventListener('click', () => {
+      const name = getUsername();
+      if (!name) return;
+      const code = generateRoomCode();
+      window.location.href = `room.html?room=${code}&name=${encodeURIComponent(name)}&host=1`;
+    });
+
+    joinBtn.addEventListener('click', () => {
+      const name = getUsername();
+      if (!name) return;
+      const code = roomCodeEl.value.trim().toUpperCase();
+      if (code.length < 4) { showError('Geçerli bir oda kodu girin.'); return; }
+      window.location.href = `room.html?room=${code}&name=${encodeURIComponent(name)}`;
+    });
+
+    roomCodeEl.addEventListener('keydown', e => { if (e.key === 'Enter') joinBtn.click(); });
+    usernameEl.addEventListener('keydown', e => { if (e.key === 'Enter') createBtn.click(); });
+  </script>
+</body>
+</html>

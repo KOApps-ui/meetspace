@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MeetSpace — Toplantı Odası</title>
+    <meta name="description" content="MeetSpace video konferans odası." />
+    <meta name="theme-color" content="#6C63FF" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="room-page">
+
+    <!-- Top bar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <div class="logo-small">
+                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="28">
+                    <rect width="32" height="32" rx="8" fill="url(#grad2)" />
+                    <path d="M7 11C7 9.9 7.9 9 9 9h10c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H9c-1.1 0-2-.9-2-2V11z"
+                        fill="white" />
+                    <path d="M21 13.5l4-2.5v10l-4-2.5V13.5z" fill="white" />
+                    <defs>
+                        <linearGradient id="grad2" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#6C63FF" />
+                            <stop offset="1" stop-color="#3ECFCF" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>MeetSpace</span>
+            </div>
+        </div>
+        <div class="topbar-center">
+            <div class="room-info">
+                <span class="room-label">Oda Kodu:</span>
+                <span class="room-code" id="roomCodeDisplay">------</span>
+                <button class="copy-btn" id="copyBtn" title="Kopyala">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                        <rect x="9" y="9" width="13" height="13" rx="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                </button>
+                <button class="share-btn" id="shareBtn" title="Linki Kopyala">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
+                    </svg>
+                    Link
+                </button>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div class="participant-count">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <span id="participantCount">1</span>
+            </div>
+            <div class="connection-status" id="connStatus">
+                <span class="status-dot connecting"></span>
+                <span id="connStatusText">Bağlanıyor...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notification toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Video grid -->
+    <main class="video-area" id="videoArea">
+        <div class="video-grid" id="videoGrid">
+            <!-- Videos injected by JS -->
+        </div>
+    </main>
+
+    <!-- Controls -->
+    <footer class="controls-bar">
+        <div class="controls-inner">
+
+            <!-- Mic -->
+            <button class="ctrl-btn" id="micBtn" title="Mikrofon">
+                <span class="ctrl-icon mic-on">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" />
+                    </svg>
+                </span>
+                <span class="ctrl-icon mic-off" style="display:none">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="1" y1="1" x2="23" y2="23" />
+                        <path
+                            d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23M12 19v4M8 23h8" />
+                    </svg>
+                </span>
+                <span class="ctrl-label">Mikrofon</span>
+            </button>
+
+            <!-- Camera -->
+            <button class="ctrl-btn" id="camBtn" title="Kamera">
+                <span class="ctrl-icon cam-on">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 7l-7 5 7 5V7z" />
+                        <rect x="1" y="5" width="15" height="14" rx="2" />
+                    </svg>
+                </span>
+                <span class="ctrl-icon cam-off" style="display:none">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2M23 7l-7 5 7 5V7z" />
+                        <line x1="1" y1="1" x2="23" y2="23" />
+                    </svg>
+                </span>
+                <span class="ctrl-label">Kamera</span>
+            </button>
+
+            <!-- Screen share -->
+            <button class="ctrl-btn" id="screenBtn" title="Ekran Paylaş">
+                <span class="ctrl-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" />
+                        <path d="M8 21h8M12 17v4" />
+                    </svg>
+                </span>
+                <span class="ctrl-label">Ekran</span>
+            </button>
+
+            <!-- End call -->
+            <button class="ctrl-btn danger" id="endBtn" title="Toplantıyı Bitir">
+                <span class="ctrl-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.42 19.42 0 0 1 4.26 9.6a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 3.17 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.15 8.91" />
+                        <line x1="23" y1="1" x2="1" y2="23" />
+                    </svg>
+                </span>
+                <span class="ctrl-label">Kapat</span>
+            </button>
+
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
